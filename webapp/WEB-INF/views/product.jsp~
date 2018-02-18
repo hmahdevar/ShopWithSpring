@@ -1,0 +1,92 @@
+<%@include file="/WEB-INF/views/layout/header.jsp" %>
+<%@include file="/WEB-INF/views/layout/topbar.jsp" %>
+<%@include file="/WEB-INF/views/layout/menu.jsp" %>
+<%--product content--%>
+<section class="generalwrapper dm-shadow clearfix">
+    <div class="container">
+        <div class="row">
+
+
+            <div id="content" class="first col-lg-10 col-md-6 col-sm-6 col-xs-12 clearfix">
+
+
+                <div class="col-lg-8 col-md-6 col-sm-12">
+                    <table class="table table-bordered">
+
+                        <tbody>
+
+                        <tr>
+                            <td>Name</td>
+                            <td>${product.getName()}</td>
+                        </tr>
+
+                        <tr>
+                            <td>Price</td>
+                            <td>${product.getPrice()}</td>
+                        </tr>
+
+                        <tr>
+                            <td>qauntity</td>
+                            <td>${product.getQuantity()}</td>
+                        </tr>
+                        <c:forEach items="${product.getAttributeList().toArray()}" var="attribute">
+                            <tr>
+                                <td>${attribute.getAttributeItemName()}</td>
+                                <td>${attribute.getValue()}</td>
+                            </tr>
+                        </c:forEach>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="col-lg-4 col-md-6 col-sm-12">
+                    <div data-effect="slide-right" class="effect-slide-right in row"
+                         style="transition: all 0.7s ease-in-out 0s;">
+                        <img class="" src="<c:url value="/resources/img/14.JPG" />" alt="" >
+                    </div><!-- image-container -->
+                    <br>
+                    <div class=" row"><span>
+                        <c:if test="${product.getQuantity()>0}">
+                            <select class=" first form-control input-sm col-md-6 col-sm-6 col-xs-12 clearfix"
+                                    id="quantity${product.getProductId()}">
+                                <% for (int i = 1; i < 11; i += 1) { %>
+                                <option><%=i%></option>
+                                <% } %>
+
+                            </select>
+
+                        </c:if><button id="${product.getProductId()}"
+                                 class="btn btn-primary addToCart col-md-6 col-sm-6 col-xs-12 clearfix">${contextService.get("????? ?? ??? ????")}</button>
+                    </span>
+                        </div>
+                </div>
+
+
+                <div class="clearfix"></div>
+
+                <hr>
+                <div>
+                    <p>
+                        ${product.getDescription()}
+                    </p>
+
+                </div>
+                <hr>
+                <div>
+                    <p>
+                        ${product.getSummaryDescription()}
+                    </p>
+
+                </div>
+
+            </div>
+            <%@include file="/WEB-INF/views/layout/rightsidebar.jsp"%>
+        </div>
+
+    </div>
+
+</section>
+<%@include file="/WEB-INF/views/layout/bottommessage.jsp" %>
+<%@include file="/WEB-INF/views/layout/bottombar.jsp" %>
+<%@include file="/WEB-INF/views/layout/copyright.jsp" %>
+<%@include file="/WEB-INF/views/layout/footer.jsp" %>

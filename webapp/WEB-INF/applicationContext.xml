@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+       xmlns:security="http://www.springframework.org/schema/security"
+       xmlns:securit="http://www.springframework.org/schema/security"
+
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+
+    <!--<bean id="mydataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">-->
+    <!--<property name="driverClassName" value="org.h2.Driver"/>-->
+    <!--<property name="url" value="jdbc:h2:tcp://localhost/~/test"/>-->
+    <!--<property name="username" value="sa"/>-->
+    <!--<property name="password" value=""/>-->
+
+    <!--</bean>-->
+
+    <!--<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">-->
+    <!--<property name="dataSource" ref="mydataSource"/>-->
+    <!--<property name="hibernateProperties">-->
+    <!--<props>-->
+    <!--<prop key="hibernate.dialect">org.hibernate.dialect.H2Dialect</prop>-->
+    <!--<prop key="hibernate.hbm2ddl.auto">update</prop>-->
+    <!--<prop key="hibernate.show_sql">true</prop>-->
+    <!--<prop key="hibernate.format_sql">true</prop>-->
+
+    <!--</props>-->
+    <!--</property>-->
+    <!--<property name="packagesToScan">-->
+    <!--<list>-->
+    <!--<value>com.hossein.kesens</value>-->
+    <!--</list>-->
+    <!--</property>-->
+    <!--</bean>-->
+    <!--<bean id="persistenceExceptionTranslationPostProcessor"-->
+    <!--class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor"/>-->
+    <!--<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">-->
+    <!--<property name="sessionFactory" ref="sessionFactory"/>-->
+    <!--</bean>-->
+
+    <bean id="mydataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/kesens?characterEncoding=UTF-8"/>
+        <property name="username" value="hossein"/>
+        <property name="password" value="123456"/>
+    </bean>
+
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <property name="dataSource" ref="mydataSource"/>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.format_sql">true</prop>
+                <prop key="hibernate.enable_lazy_load_no_trans">true</prop>
+            </props>
+        </property>
+        <property name="packagesToScan">
+            <list>
+                <value>com.hossein.kesens</value>
+            </list>
+        </property>
+    </bean>
+    <bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"/>
+
+    </bean>
+
+
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="1024000"/>
+    </bean>
+
+
+    <security:http auto-config="true" use-expressions="true">
+
+        <securit:intercept-url pattern="/admin/**" access="hasRole('ROLE_ADMIN')"/>
+        <securit:intercept-url pattern="/customer/**" access="hasRole('ROLE_USER')"/>
+        <securit:form-login
+                login-page="/login"
+                default-target-url="/"
+                authentication-failure-url="/login?error"
+                username-parameter="email"
+                password-parameter="password"
+        />
+        <securit:logout
+                logout-success-url="/login?logout"
+        />
+    </security:http>
+    <securit:authentication-manager>
+        <securit:authentication-provider>
+            <securit:jdbc-user-service
+                    data-source-ref="mydataSource"
+                    authorities-by-username-query="SELECT email , AUTHORITY FROM Authorities WHERE email = ?"
+                    users-by-username-query="SELECT email , password , enabled FROM Users WHERE email= ?"
+            />
+        </securit:authentication-provider>
+    </securit:authentication-manager>
+
+
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver">
+        <property name="messageConverters">
+            <array>
+                <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                    <constructor-arg index="0" name="defaultCharset" value="UTF-8"/>
+                    <property name="supportedMediaTypes">
+                        <list>
+                            <value>text/plain;charset=UTF-8</value>
+                            <value>text/html;charset=UTF-8</value>
+                            <value>application/json;charset=UTF-8</value>
+                            <value>application/x-www-form-urlencoded;charset=UTF-8</value>
+                        </list>
+                    </property>
+                </bean>
+                <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                    <property name="supportedMediaTypes">
+                        <list>
+                            <value>text/plain;charset=UTF-8</value>
+                            <value>text/html;charset=UTF-8</value>
+                            <value>application/json;charset=UTF-8</value>
+                            <value>application/x-www-form-urlencoded;charset=UTF-8</value>
+                        </list>
+                    </property>
+                </bean>
+            </array>
+        </property>
+    </bean>
+</beans>
